@@ -2,6 +2,7 @@
   "name": "hello-container-query-grid",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://ckuijjer.github.io/hello-container-query-grid",
   "dependencies": {
     "emotion": "^9.2.1",
     "react": "^16.4.0",
