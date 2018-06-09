@@ -5,7 +5,9 @@
   "homepage": "http://ckuijjer.github.io/hello-container-query-grid",
   "dependencies": {
     "emotion": "^9.2.1",
+    "lodash.debounce": "^4.0.8",
     "react": "^16.4.0",
+    "react-container-dimensions": "^1.3.3",
     "react-container-query": "^0.11.0",
     "react-dom": "^16.4.0",
     "react-emotion": "^9.2.1",
@@ -26,9 +28,9 @@
     }
   },
   "devDependencies": {
+    "gh-pages": "^1.2.0",
     "husky": "^0.15.0-rc.13",
     "prettier": "^1.11.1",
-    "pretty-quick": "^1.4.1",
-    "gh-pages": "^1.2.0"
+    "pretty-quick": "^1.4.1"
   }
 }

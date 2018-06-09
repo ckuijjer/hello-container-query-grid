@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import {
   Col,
   Row,
@@ -7,7 +7,9 @@ import {
   Container,
 } from 'react-grid-system'
 import { ContainerQuery } from 'react-container-query'
+import ContainerDimensions from 'react-container-dimensions'
 import styled from 'react-emotion'
+import debounce from 'lodash.debounce'
 
 const Pink = styled('div')({
   backgroundColor: '#f99',
@@ -24,7 +26,7 @@ const Yellow = styled('div')({
 
 const Sidebar = styled('div')(({ open }) => ({
   width: open ? 400 : 0,
-  height: '100vh',
+  height: '75vh',
   backgroundColor: '#ff9',
   color: '#cc6',
   transition: 'width 300ms ease-in-out',
@@ -68,9 +70,42 @@ const configuration = {
   defaultScreenClass: 'xl',
 }
 
-class App extends Component {
-  componentDidMount() {}
+class ContainerBasedGrid extends React.Component {
+  isGrowing = false
+  width = null
 
+  setBreakpoints = debounce(containerWidth => {
+    const windowWidth = window.innerWidth
+
+    setConfiguration({
+      ...configuration,
+      breakpoints: configuration.breakpoints.map(
+        x => x + windowWidth - containerWidth,
+      ),
+    })
+
+    window.dispatchEvent(new Event('resize'))
+
+    this.width = containerWidth
+  }, this.props.wait || 100)
+
+  render() {
+    const { children } = this.props
+
+    return (
+      <ContainerDimensions>
+        {({ width }) => {
+          this.isGrowing = this.width < width
+          this.setBreakpoints(width)
+
+          return children
+        }}
+      </ContainerDimensions>
+    )
+  }
+}
+
+class App extends Component {
   state = {
     open: false,
   }
@@ -79,53 +114,37 @@ class App extends Component {
     this.setState({ open: !this.state.open })
   }
 
-  componentDidUpdate(next, prevState) {
-    if (this.state.open !== prevState.open) {
-      if (this.state.open) {
-        // do magic
-        setConfiguration({
-          ...configuration,
-          breakpoints: [976, 1168, 1392, 1600],
-        })
-
-        // force a resize event, as react-grid-system listens to that
-        window.dispatchEvent(new Event('resize'))
-      } else {
-        setConfiguration(configuration)
-
-        // force a resize event, as react-grid-system listens to that
-        window.setTimeout(() => {
-          window.dispatchEvent(new Event('resize'))
-        }, 300)
-      }
-    }
-  }
-
   render() {
     return (
-      <PageContainer>
-        <Sidebar open={this.state.open} />
-        <PageContent>
-          <Container>
-            <Row>
-              <Col xs={12} lg={6}>
-                <Pink>
-                  <Button onClick={this.toggleSidebar}>Toggle Sidebar</Button>
-                </Pink>
-              </Col>
-              <Col xs={12} lg={6}>
-                <Pink>
-                  <ScreenClassRender
-                    render={screenClass => (
-                      <HugeNumber>{screenClass}</HugeNumber>
-                    )}
-                  />
-                </Pink>
-              </Col>
-            </Row>
-          </Container>
-        </PageContent>
-      </PageContainer>
+      <Fragment>
+        <PageContainer>
+          <Sidebar open={this.state.open} />
+          <PageContent>
+            <ContainerBasedGrid>
+              <Container>
+                <Row>
+                  <Col xs={12} lg={6}>
+                    <Pink>
+                      <Button onClick={this.toggleSidebar}>
+                        Toggle Sidebar
+                      </Button>
+                    </Pink>
+                  </Col>
+                  <Col xs={12} lg={6}>
+                    <Pink>
+                      <ScreenClassRender
+                        render={screenClass => (
+                          <HugeNumber>{screenClass}</HugeNumber>
+                        )}
+                      />
+                    </Pink>
+                  </Col>
+                </Row>
+              </Container>
+            </ContainerBasedGrid>
+          </PageContent>
+        </PageContainer>
+      </Fragment>
     )
   }
 }
