@@ -26,7 +26,7 @@ const Yellow = styled('div')({
 
 const Sidebar = styled('div')(({ open }) => ({
   width: open ? 400 : 0,
-  height: '75vh',
+  height: '100vh',
   backgroundColor: '#ff9',
   color: '#cc6',
   transition: 'width 300ms ease-in-out',
